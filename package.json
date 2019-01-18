@@ -1,51 +1,68 @@
 {
-  "name": "grid-tool",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "register-service-worker": "^1.5.2",
-    "vue": "^2.5.21"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.3.0",
-    "@vue/cli-plugin-eslint": "^3.3.0",
-    "@vue/cli-plugin-pwa": "^3.3.0",
-    "@vue/cli-service": "^3.3.0",
-    "@vue/eslint-config-prettier": "^4.0.1",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "node-sass": "^4.9.0",
-    "sass-loader": "^7.0.1",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/prettier"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+	"name": "grid-tool",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "vue-cli-service serve",
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build",
+		"lint": "vue-cli-service lint",
+		"stylelint": "stylelint src/*.vue",
+		"stylelint:fix": "stylelint src/*.vue --fix"
+	},
+	"dependencies": {
+		"@sil/base-style": "0.0.5",
+		"@sil/grid": "^1.1.0",
+		"axios": "^0.18.0",
+		"henris": "^0.5.1",
+		"register-service-worker": "^1.5.2",
+		"silicons": "^0.1.7",
+		"stylelint": "^9.10.0",
+		"stylelint-logical-order": "0.0.4",
+		"stylelint-order": "^2.0.0",
+		"vue": "^2.5.21",
+		"vue-markdown": "^2.2.4"
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-babel": "^3.3.0",
+		"@vue/cli-plugin-eslint": "^3.3.0",
+		"@vue/cli-plugin-pwa": "^3.3.0",
+		"@vue/cli-service": "^3.3.0",
+		"@vue/eslint-config-prettier": "^4.0.1",
+		"babel-eslint": "^10.0.1",
+		"eslint": "^5.8.0",
+		"eslint-plugin-vue": "^5.0.0",
+		"node-sass": "^4.9.0",
+		"sass-loader": "^7.0.1",
+		"vue-template-compiler": "^2.5.21"
+	},
+	"eslintConfig": {
+		"root": true,
+		"env": {
+			"node": true
+		},
+		"extends": [
+			"plugin:vue/essential",
+			"@vue/prettier"
+		],
+		"rules": {},
+		"parserOptions": {
+			"parser": "babel-eslint"
+		}
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions",
+		"not ie <= 8"
+	],
+	"stylelint": {
+		"extends": [
+			"stylelint-logical-order"
+		]
+	}
 }
