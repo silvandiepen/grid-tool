@@ -4,7 +4,7 @@
       <Column medium="1:3">
         <div class="input-field">
           <label>
-            Grid width
+            Image url
           </label>
           <input
             type="text"
@@ -84,7 +84,10 @@
       </Column>
     </Row>
     <div class="grid-tool__view">
-      <div class="grid-tool__image" v-if="theImage">
+      <div
+        class="grid-tool__image"
+        v-if="theImage"
+      >
         <img
           :src="theImage"
           alt="the image preview"
@@ -94,15 +97,34 @@
           :class="`grid-tool__grid--${grid.type}`"
         ></div>
       </div>
-      <div class="grid-tool__start" v-if="!theImage">
-        hoiii.. je hebt nog geen image
+      <div
+        class="grid-tool__start"
+        v-if="!theImage"
+      >
+
+        <div class="grid-tool__dropzone">
+          <div class="grid-tool__dropzone-title">Drop your image here</div>
+          <input
+            type="file"
+            @change="uploadImage"
+          />
+        </div>
       </div>
     </div>
+    <section class="container">
+      <div class="content">
+        <h2>Grid Tool</h2>
+        <h3>But, what does it do?</h3>
+        <p>Sometimes, you see these designs and just want to know how the grid is build. </p><p>You can load your images in photoshop or sketch and figure it out, but sometimes a simple tool like this can help you out too :).</p>
+       
+      </div>
+    </section>
     <silFooter></silFooter>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 // import axios from "axios";
 import Grid from "@sil/grid";
 
@@ -122,6 +144,7 @@ export default {
       url: null,
       showImage: false,
       theImage: null,
+      blob: false,
       grid: {
         og_width: 0,
         width: 0,
@@ -143,6 +166,7 @@ export default {
         this.theImage = this.url;
         this.getImageSize();
         this.updateSettings();
+        this.blob = false;
       } else {
         this.showImage = false;
       }
@@ -159,11 +183,18 @@ export default {
         _this.grid.zoom = 0.5;
       }
     },
+    uploadImage(e) {
+      const _this = this;
+      _this.url = URL.createObjectURL(e.srcElement.files[0]);
+      _this.theImage = URL.createObjectURL(e.srcElement.files[0]);
+      _this.blob = true;
+      _this.getImageSize();
+      setTimeout(function(){
+        _this.updateSettings();
+      },100);
+    },
     updateSettings() {
       let view = document.querySelector(".grid-tool__view");
-
-      /* eslint-disable */
-      console.log(view);
       view.style.setProperty(
         "--grid-width",
         this.grid.width * this.grid.zoom + "px"
@@ -202,7 +233,7 @@ export default {
     @include min-(padding, 1, 40);
     min-height: 100vh;
     min-width: 100vw;
-    background-color: color(Black, 0.25);
+    background-color: color(Black, 0.85);
     overflow: scroll;
   }
   &__image {
@@ -247,6 +278,47 @@ export default {
       );
       background-size: calc(100% / (var(--grid-columns, 24) / 2));
     }
+  }
+  &__start {
+    width: 100%;
+    height: 80vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__dropzone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: grid(5);
+    height: grid(5);
+    @include min-(width, 5, 320) {
+      height: 320px;
+    }
+    background: color(White, 1);
+    border-radius: 50%;
+    overflow: hidden;
+    input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: color(Purple);
+    }
+  }
+  &__dropzone-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    color: color(White);
+    font-size: grid(0.5);
+    font-weight: bold;
+    pointer-events: none;
   }
 }
 
