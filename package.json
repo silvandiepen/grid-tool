@@ -6,9 +6,9 @@
 		"dev": "vue-cli-service serve",
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
-		"lint": "vue-cli-service lint",
-		"stylelint": "stylelint src/*.vue",
-		"stylelint:fix": "stylelint src/*.vue --fix"
+    "lint": "vue-cli-service lint",
+    "stylelint": "stylelint src/*.vue",
+    "stylelint:fix": "stylelint src/*.vue --fix"
 	},
 	"dependencies": {
 		"@sil/base-style": "0.0.5",
@@ -20,8 +20,7 @@
 		"stylelint": "^9.10.0",
 		"stylelint-logical-order": "0.0.4",
 		"stylelint-order": "^2.0.0",
-		"vue": "^2.5.21",
-		"vue-markdown": "^2.2.4"
+		"vue": "^2.5.21"
 	},
 	"devDependencies": {
 		"@vue/cli-plugin-babel": "^3.3.0",

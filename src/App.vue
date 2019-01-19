@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <Row class="grid-tool__toolbar">
+    <Row
+      class="grid-tool__toolbar"
+      :class="{'is-active' : theImage}"
+    >
       <Column medium="1:3">
         <div class="input-field">
           <label>
@@ -50,7 +53,7 @@
           </div>
           <div class="input-field">
             <label>
-              Zoom
+              Image Zoom
             </label>
             <select
               v-model="grid.zoom"
@@ -102,21 +105,30 @@
         v-if="!theImage"
       >
 
-        <div class="grid-tool__dropzone">
+        <div
+          class="grid-tool__dropzone"
+          :class="{'is-dragging': isDragging, 'is-dropped': isDropped}"
+        >
           <div class="grid-tool__dropzone-title">Drop your image here</div>
           <input
+            @dragover="initDrag"
+            @dragenter="initDrag"
+            @dragend="stopDrag"
+            @dragleave="stopDrag"
+            @drop.prevent="dropFile"
             type="file"
-            @change="uploadImage"
+            @change="changeFile"
           />
         </div>
       </div>
     </div>
-    <section class="container">
-      <div class="content">
+    <section class="background--yellow">
+      <div class="container content">
         <h2>Grid Tool</h2>
         <h3>But, what does it do?</h3>
-        <p>Sometimes, you see these designs and just want to know how the grid is build. </p><p>You can load your images in photoshop or sketch and figure it out, but sometimes a simple tool like this can help you out too :).</p>
-       
+        <p>Sometimes, you see these designs and just want to know how the grid is build. </p>
+        <p>You can load your images in photoshop or sketch and figure it out, but sometimes a simple tool like this can help you out too :).</p>
+
       </div>
     </section>
     <silFooter></silFooter>
@@ -144,7 +156,10 @@ export default {
       url: null,
       showImage: false,
       theImage: null,
+      offset_is_pristine: true,
       blob: false,
+      isDragging: false,
+      isDropped: false,
       grid: {
         og_width: 0,
         width: 0,
@@ -156,8 +171,24 @@ export default {
       }
     };
   },
-  created() {
-    // this.updateSettings();
+  created() {},
+  watch: {
+    grid: {
+      handler: function(val, oldVal) {
+        console.log(val.width, oldVal.width);
+        if (val.offset_left !== oldVal.offset_left) {
+          // this.offset_is_pristine = false;
+        }
+        if (this.offset_is_pristine) {
+          if (val.width !== oldVal.width) {
+            console.log("hoiiii");
+            this.offset_left = (this.grid.og_width - this.grid.width) / 2;
+            this.updateSettings();
+          }
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     checkUrl: function() {
@@ -183,16 +214,7 @@ export default {
         _this.grid.zoom = 0.5;
       }
     },
-    uploadImage(e) {
-      const _this = this;
-      _this.url = URL.createObjectURL(e.srcElement.files[0]);
-      _this.theImage = URL.createObjectURL(e.srcElement.files[0]);
-      _this.blob = true;
-      _this.getImageSize();
-      setTimeout(function(){
-        _this.updateSettings();
-      },100);
-    },
+
     updateSettings() {
       let view = document.querySelector(".grid-tool__view");
       view.style.setProperty(
@@ -211,6 +233,33 @@ export default {
         "--grid-offset-left",
         this.grid.offset_left * this.grid.zoom + "px"
       );
+    },
+    changeFile(e) {
+      const _this = this;
+      if (!_this.isDropped) {
+        _this.uploadImage(e.srcElement.files[0]);
+      }
+    },
+    uploadImage(file) {
+      const _this = this;
+      _this.url = URL.createObjectURL(file);
+      _this.theImage = URL.createObjectURL(file);
+      _this.blob = true;
+      _this.getImageSize();
+      setTimeout(function() {
+        _this.updateSettings();
+      }, 100);
+    },
+    initDrag() {
+      this.isDragging = true;
+    },
+    stopDrag() {
+      this.isDragging = false;
+    },
+    dropFile(e) {
+      this.isDragging = false;
+      this.isDropped = true;
+      this.uploadImage(e.dataTransfer.files[0]);
     }
   }
 };
@@ -219,21 +268,40 @@ export default {
 <style lang="scss">
 @import "~@sil/base-style/src/scss/index.full";
 
+$transition: 0.3s;
+$bezier: cubic-bezier(0, 1.25, 0.75, 1.25);
+
+body,
+html {
+  background-color: color(Black);
+  height: auto;
+}
+
 .grid-tool {
   &__toolbar {
+    position: absolute;
+    top: 0;
+    z-index: 10;
+    width: 100%;
     background-color: color(Black);
     padding: 1rem;
+    transform: translateY(-100%);
+    transition: transform $transition $bezier;
+    &.is-active {
+      transform: translateY(0);
+    }
   }
   &__view {
     position: relative;
     left: 0;
     top: 0;
     display: block;
-    padding: grid(1);
-    @include min-(padding, 1, 40);
     min-height: 100vh;
     min-width: 100vw;
-    background-color: color(Black, 0.85);
+    padding: grid(1);
+    padding-top: calc(#{grid(1)} + 80px);
+    @include min-(padding, 1, 40);
+    background-color: color(White, 0.25);
     overflow: scroll;
   }
   &__image {
@@ -241,7 +309,10 @@ export default {
     display: block;
     margin: auto;
     width: var(--grid-image-width);
+    transition: width $transition $bezier;
     overflow: hidden;
+    box-shadow: 0 0 grid(2) 0 color(Black, 0.5);
+    border: 1px solid color(Black);
     img {
       display: block;
       width: var(--grid-image-width);
@@ -253,6 +324,7 @@ export default {
     top: 0;
     display: block;
     width: var(--grid-width, 100%);
+    transition: width $transition $bezier, left $transition $bezier;
     height: 100%;
     box-shadow: 0 0 0 calc(var(--grid-image-width) - var(--grid-width)) black,
       0 0 0 10px black;
@@ -294,19 +366,58 @@ export default {
     justify-content: center;
     width: grid(5);
     height: grid(5);
+    background-color: transparent;
     @include min-(width, 5, 320) {
       height: 320px;
     }
-    background: color(White, 1);
-    border-radius: 50%;
-    overflow: hidden;
+    transition: opacity ($transition * 5) $bezier;
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 4px solid color(Yellow);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      transition: transform $transition $bezier;
+    }
+    &:after {
+      width: 80%;
+      height: 80%;
+    }
+    // &:hover {
+    //   &:before,
+    //   &:after {
+    //     transform: translate(-50%, -50%) scale(0.85);
+    //   }
+    // }
     input[type="file"] {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: color(Purple);
+      opacity: 0;
+    }
+    &.is-dropped {
+      opacity: 0;
+      &:before,
+      &:after {
+        border-color: color(Blue);
+        transform: translate(-50%, -50%) scale(3);
+      }
+    }
+    &.is-dragging {
+      &:before,
+      &:after {
+        border-color: color(Green);
+        transform: translate(-50%, -50%) scale(1.5);
+      }
     }
   }
   &__dropzone-title {
@@ -328,9 +439,10 @@ export default {
 .input-field {
   label {
     display: block;
-    color: color(White);
+    color: color(Yellow);
     padding: 0.25rem 0.5rem;
     font-size: 14px;
+    font-weight: bold;
   }
   select,
   input[type="text"],
