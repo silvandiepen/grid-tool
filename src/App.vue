@@ -276,7 +276,7 @@ export default {
         transparent calc(50%),
         transparent
       );
-      background-size: calc(100% / (var(--grid-columns, 24) / 2));
+      background-size: calc(100% / ((var(--grid-columns, 24) / 2)));
     }
   }
   &__start {
