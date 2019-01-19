@@ -317,6 +317,9 @@ export default {
     transform: translate(-50%, -50%);
     color: color(White);
     font-size: grid(0.5);
+    @include min-(null, 5, 320) {
+      font-size: 32px;
+    }
     font-weight: bold;
     pointer-events: none;
   }
